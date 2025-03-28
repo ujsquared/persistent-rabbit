@@ -1,5 +1,4 @@
 import { mockMetrics, layers } from '@/mocks/metrics.mock'
-import { globalMetrics } from '@/mocks/global.mock'
 import LayerSection from '@/components/LayerSection'
 import GlobalOverview from '@/components/GlobalOverview'
 

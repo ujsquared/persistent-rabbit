@@ -3,14 +3,16 @@ export interface MetricDataPoint {
   value: number;
 }
 
-export interface MetricWithTrace extends MetricDataPoint {
-  traceIds: string[];
+export interface MetricWithTrace {
+  timestamp: string;
+  value: number;
+  traceId?: string;
 }
 
 export interface SpanEvent {
   timestamp: string;
   name: string;
-  attributes: Record<string, any>;
+  attributes: Record<string, string | number | boolean>;
 }
 
 export interface Span {
@@ -30,7 +32,7 @@ export interface Span {
     'db.system'?: string;
     'db.statement'?: string;
     'error.message'?: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean | undefined;
   };
   events: SpanEvent[];
   parentSpanId?: string;
@@ -44,4 +46,30 @@ export interface Trace {
   rootService: string;
   status: 'success' | 'error';
   spans: Span[];
+}
+
+export interface Service {
+  id: string;
+  name: string;
+  type: string;
+  status: 'healthy' | 'unhealthy';
+  layer: string;
+  metrics: {
+    latency: {
+      p50: MetricWithTrace[];
+      p95: MetricWithTrace[];
+      p99: MetricWithTrace[];
+    }
+    errors: {
+      '4xx': MetricWithTrace[];
+      '5xx': MetricWithTrace[];
+    }
+    resources: {
+      cpu: MetricWithTrace[];
+      memory: MetricWithTrace[];
+    }
+    custom: {
+      [key: string]: MetricWithTrace[];
+    }
+  }
 } 

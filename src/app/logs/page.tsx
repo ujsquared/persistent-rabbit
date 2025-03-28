@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { mockLogs } from '@/mocks/logs.mock'
+import { useLogsStore } from '@/stores/logsStore'
 import LogsTable from '@/components/LogsTable'
+import Link from 'next/link'
 
 const components = ['All', 'ALB', 'Kong', 'Heracles API', 'PostgreSQL', 'Redis']
 
 export default function LogsPage() {
   const [selectedComponent, setSelectedComponent] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+  const logs = useLogsStore((state) => state.logs)
 
   return (
     <div className="space-y-6">
@@ -54,10 +56,42 @@ export default function LogsPage() {
       </div>
 
       <LogsTable
-        logs={mockLogs}
+        logs={logs}
         selectedComponent={selectedComponent}
         searchQuery={searchQuery}
       />
+
+      <div className="mt-4">
+        <table className="min-w-full">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Component</th>
+              <th>Message</th>
+              <th>Trace ID</th>
+              <th>Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((log) => (
+              <tr key={log.id}>
+                <td>{log.timestamp}</td>
+                <td>{log.component}</td>
+                <td>{log.message}</td>
+                <td>
+                  <Link 
+                    href={`/traces/${log.traceId}`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    {log.traceId}
+                  </Link>
+                </td>
+                <td>{log.level}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 } 

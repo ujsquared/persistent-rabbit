@@ -1,44 +1,50 @@
-import { Trace, Span, MetricDataPoint } from '@/types/telemetry'
+import type { MetricDataPoint } from '@/types/telemetry'
 import { staticTraces } from '@/data/static-telemetry'
+import type { MetricWithTrace } from '@/types/telemetry'
 
 export interface SpanEvent {
   timestamp: string;
   name: string;
-  attributes: Record<string, any>;
+  attributes: Record<string, string | number | boolean>;
 }
 
-export interface Span {
+interface TraceBase {
+  id: string;
+  parentId?: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  timestamp: string;
+  duration: number;
+  status: 'success' | 'error';
+  service: string;
+  serviceId: string;
+  type: string;
+  spans: SpanData[];
+  rootService: string;
+}
+
+interface SpanData {
   id: string;
   name: string;
   startTime: string;
   endTime: string;
-  duration: number; // in milliseconds
+  duration: number;
   serviceId: string;
   serviceName: string;
   layer: string;
   status: 'success' | 'error';
-  attributes: {
-    'http.method'?: string;
-    'http.url'?: string;
-    'http.status_code'?: number;
-    'db.system'?: string;
-    'db.statement'?: string;
-    'error.message'?: string;
-    [key: string]: any;
-  };
+  attributes: Record<string, string | number | boolean>;
   events: SpanEvent[];
   parentSpanId?: string;
+  tags: Record<string, string>;
+  metrics?: {
+    [key: string]: MetricWithTrace[];
+  };
 }
 
-export interface Trace {
-  id: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  rootService: string;
-  status: 'success' | 'error';
-  spans: Span[];
-}
+export type Trace = TraceBase;
+export type Span = SpanData;
 
 // Helper function to generate a trace that matches our metrics data
 export const generateTrace = (
@@ -65,16 +71,20 @@ export const generateTrace = (
     status: 'success',
     attributes: {
       'http.method': 'GET',
-      'http.url': '/api/v1/data',
-      'http.status_code': 200,
+      'http.url': '/api/data',
+      'http.status_code': 200
     },
-    events: [
-      {
-        timestamp: startTime.toISOString(),
-        name: 'RequestReceived',
-        attributes: { source_ip: '192.168.1.1' }
+    events: [{
+      timestamp: startTime.toISOString(),
+      name: 'RequestReceived',
+      attributes: {
+        source_ip: '192.168.1.1'
       }
-    ]
+    }],
+    tags: {
+      environment: 'production',
+      region: 'us-west-2'
+    }
   };
   spans.push(albSpan);
 
@@ -89,20 +99,24 @@ export const generateTrace = (
     serviceName: 'Kong API Gateway',
     layer: 'entry',
     status: 'success',
+    parentSpanId: albSpan.id,
     attributes: {
       'http.method': 'GET',
-      'http.url': '/api/v1/data',
+      'http.url': '/api/data',
       'http.status_code': 200,
       'auth.tenant': 'tenant-123'
     },
-    events: [
-      {
-        timestamp: new Date(startTime.getTime() + 6).toISOString(),
-        name: 'AuthenticationSuccess',
-        attributes: { tenant_id: 'tenant-123' }
+    events: [{
+      timestamp: new Date(startTime.getTime() + 6).toISOString(),
+      name: 'AuthenticationSuccess',
+      attributes: {
+        tenant_id: 'tenant-123'
       }
-    ],
-    parentSpanId: albSpan.id
+    }],
+    tags: {
+      environment: 'production',
+      gateway: 'kong'
+    }
   };
   spans.push(kongSpan);
 
@@ -111,19 +125,23 @@ export const generateTrace = (
     id: `${traceId}-3`,
     name: 'heracles.getData',
     startTime: new Date(startTime.getTime() + 15).toISOString(),
-    endTime: new Date(startTime.getTime() + 85).toISOString(),
-    duration: 70,
+    endTime: new Date(startTime.getTime() + 25).toISOString(),
+    duration: 10,
     serviceId: 'heracles',
     serviceName: 'Heracles API',
     layer: 'core',
     status: 'success',
     attributes: {
       'http.method': 'GET',
-      'http.path': '/api/v1/data',
-      'http.status_code': 200,
+      'http.path': '/api/data',
+      'http.status_code': 200
     },
     events: [],
-    parentSpanId: kongSpan.id
+    parentSpanId: kongSpan.id,
+    tags: {
+      environment: 'production',
+      service: 'heracles'
+    }
   };
   spans.push(heraclesSpan);
 
@@ -132,8 +150,8 @@ export const generateTrace = (
     id: `${traceId}-4`,
     name: 'postgres.query',
     startTime: new Date(startTime.getTime() + 25).toISOString(),
-    endTime: new Date(startTime.getTime() + 65).toISOString(),
-    duration: 40,
+    endTime: new Date(startTime.getTime() + 35).toISOString(),
+    duration: 10,
     serviceId: 'postgres',
     serviceName: 'PostgreSQL',
     layer: 'data',
@@ -141,10 +159,14 @@ export const generateTrace = (
     attributes: {
       'db.system': 'postgresql',
       'db.statement': 'SELECT * FROM data WHERE tenant_id = $1',
-      'db.rows_affected': 100
+      'db.rows_affected': 10
     },
     events: [],
-    parentSpanId: heraclesSpan.id
+    parentSpanId: heraclesSpan.id,
+    tags: {
+      environment: 'production',
+      database: 'postgres'
+    }
   };
   spans.push(postgresSpan);
 
@@ -171,7 +193,11 @@ export const generateTrace = (
         attributes: {}
       }
     ],
-    parentSpanId: heraclesSpan.id
+    parentSpanId: heraclesSpan.id,
+    tags: {
+      environment: 'production',
+      cache: 'redis'
+    }
   };
   spans.push(redisSpan);
 
@@ -201,13 +227,16 @@ export const generateTrace = (
 
   return {
     id: traceId,
+    name: 'api.request',
     startTime: startTime.toISOString(),
-    endTime: new Date(
-      Math.max(...spans.map(s => new Date(s.endTime).getTime()))
-    ).toISOString(),
+    endTime: new Date(Math.max(...spans.map(s => new Date(s.endTime).getTime()))).toISOString(),
+    timestamp: startTime.toISOString(),
     duration: baseLatency,
-    rootService: 'alb',
+    service: 'alb',
+    serviceId: 'alb',
+    type: 'request',
     status: 'success',
+    rootService: 'alb',
     spans
   };
 };

@@ -1,10 +1,10 @@
 'use client'
 
-import { ServiceMetrics } from '@/mocks/metrics.mock'
+import { Service } from '@/types/telemetry'
 import MetricsGraph from './MetricsGraph'
 
 interface ALBMetricsProps {
-  service: ServiceMetrics
+  service: Service
 }
 
 export default function ALBMetrics({ service }: ALBMetricsProps) {
@@ -17,25 +17,28 @@ export default function ALBMetrics({ service }: ALBMetricsProps) {
           yAxisLabel="ms"
           color="#60a5fa"
         />
+        
         <MetricsGraph
           data={service.metrics.custom!.requestsPerSecond}
           title="Requests per Second"
           yAxisLabel="requests"
-          color="#10b981"
+          color="#34d399"
         />
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <MetricsGraph
           data={service.metrics.custom!.healthyHosts}
-          title="Healthy Target Hosts"
-          yAxisLabel="count"
-          color="#8b5cf6"
+          title="Healthy Hosts"
+          yAxisLabel="hosts"
+          color="#a78bfa"
         />
+
         <MetricsGraph
           data={service.metrics.custom!.sslHandshakeTime}
           title="SSL Handshake Time"
           yAxisLabel="ms"
-          color="#f59e0b"
+          color="#f472b6"
         />
       </div>
     </div>

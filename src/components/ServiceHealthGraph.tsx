@@ -13,6 +13,7 @@ import {
 } from 'chart.js'
 import 'chartjs-adapter-date-fns'
 import { Line } from 'react-chartjs-2'
+import type { ChartData, ChartOptions } from 'chart.js'
 
 ChartJS.register(
   CategoryScale,
@@ -48,34 +49,34 @@ export default function ServiceHealthGraph({
     )
   }
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
-      mode: 'index' as const,
-      intersect: false,
+      mode: 'index',
+      intersect: false
     },
     plugins: {
       legend: {
         display: false
       },
       tooltip: {
-        enabled: true
+        enabled: false
       }
     },
     scales: {
       y: {
         beginAtZero: true,
-        max: 100,
+        max: 1,
         grid: {
-          color: '#374151' // gray-700
+          color: '#e2e8f0'
         },
         ticks: {
-          color: '#9ca3af' // text-gray-400
+          color: '#64748b'
         }
       },
       x: {
-        type: 'time',
+        type: 'time' as const,
         time: {
           unit: 'hour',
           displayFormats: {
@@ -86,26 +87,26 @@ export default function ServiceHealthGraph({
           display: false
         },
         ticks: {
-          color: '#9ca3af' // text-gray-400
+          color: '#64748b'
         }
       }
     }
   }
 
-  const chartData = {
-    labels: data.map(d => d.timestamp),
-    datasets: [
-      {
-        label: title,
-        data: data.map(d => ({ x: new Date(d.timestamp), y: d.value })),
-        borderColor: color,
-        backgroundColor: color,
-        pointRadius: 0,
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true
-      }
-    ]
+  const chartData: ChartData<'line'> = {
+    datasets: data.map((point) => ({
+      label: title,
+      data: [{
+        x: new Date(point.timestamp).getTime(), // Convert to timestamp number
+        y: point.value
+      }],
+      borderColor: color,
+      backgroundColor: color,
+      pointRadius: 0,
+      borderWidth: 2,
+      tension: 0.4,
+      fill: true
+    }))
   }
 
   return (

@@ -6,8 +6,8 @@ import { MdMonitor, MdDescription, MdAccountTree } from 'react-icons/md'
 
 const navItems = [
   { href: '/', icon: MdMonitor, label: 'Monitor' },
-  { href: '/logs', icon: MdDescription, label: 'Logs' },
-  { href: '/traces', icon: MdAccountTree, label: 'Traces' }
+  { href: '/traces', icon: MdAccountTree, label: 'Traces' },
+  { href: '/logs', icon: MdDescription, label: 'Logs' }
 ]
 
 export default function Sidebar() {

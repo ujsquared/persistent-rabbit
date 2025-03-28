@@ -32,10 +32,10 @@ export default function TracesPage() {
                 <div
                   key={span.id}
                   className="flex items-center gap-4"
-                  style={{ marginLeft: span.parentId ? '2rem' : 0 }}
+                  style={{ marginLeft: span.parentSpanId ? '2rem' : 0 }}
                 >
                   <div className="w-32 text-sm text-gray-400">
-                    {span.component}
+                    {span.serviceName}
                   </div>
                   <div
                     className={`h-2 rounded ${

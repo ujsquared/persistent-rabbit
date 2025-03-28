@@ -1,4 +1,4 @@
-import { MetricDataPoint, MetricWithTrace } from '@/types/telemetry'
+import { MetricWithTrace } from '@/types/telemetry'
 import { generateTrace } from './traces.mock'
 import { 
   albMetrics, 
@@ -13,6 +13,7 @@ import {
 export interface ServiceMetrics {
   id: string;
   name: string;
+  type: string;
   layer: 'external' | 'entry' | 'core' | 'data' | 'control';
   status: 'healthy' | 'unhealthy';
   uptime: number;
@@ -34,7 +35,7 @@ export interface ServiceMetrics {
       cpu: MetricWithTrace[];
       memory: MetricWithTrace[];
     };
-    custom?: {
+    custom: {
       [key: string]: MetricWithTrace[];
     };
   };
@@ -94,6 +95,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'alb',
     name: 'Application Load Balancer',
+    type: 'Application Load Balancer',
     layer: 'external',
     status: 'healthy',
     uptime: 99.99,
@@ -126,6 +128,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'client',
     name: 'Client-Side Metrics',
+    type: 'Client-Side Metrics',
     layer: 'external',
     status: 'healthy',
     uptime: 99.95,
@@ -160,6 +163,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'kong',
     name: 'Kong API Gateway',
+    type: 'Kong API Gateway',
     layer: 'entry',
     status: 'unhealthy',
     uptime: 99.95,
@@ -192,6 +196,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'heracles',
     name: 'Heracles API',
+    type: 'Heracles API',
     layer: 'core',
     status: 'healthy',
     uptime: 99.9,
@@ -224,6 +229,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'postgres',
     name: 'PostgreSQL',
+    type: 'PostgreSQL',
     layer: 'data',
     status: 'healthy',
     uptime: 99.5,
@@ -254,6 +260,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'redis',
     name: 'Redis Cache',
+    type: 'Redis Cache',
     layer: 'data',
     status: 'healthy',
     uptime: 99.99,
@@ -286,6 +293,7 @@ export const mockMetrics: ServiceMetrics[] = [
   {
     id: 'prometheus',
     name: 'Prometheus',
+    type: 'Prometheus',
     layer: 'control',
     status: 'healthy',
     uptime: 99.95,

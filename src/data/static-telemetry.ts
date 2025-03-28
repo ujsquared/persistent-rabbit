@@ -1,4 +1,4 @@
-import { MetricWithTrace, Trace } from '@/types/telemetry'
+import { Trace } from '@/types/telemetry'
 
 // Fixed reference date: March 26, 2025
 const REFERENCE_DATE = new Date('2025-03-26T00:00:00Z')
