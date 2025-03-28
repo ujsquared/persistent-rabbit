@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useLogsStore } from '@/stores/logsStore'
 import LogsTable from '@/components/LogsTable'
-import Link from 'next/link'
 
 const components = ['All', 'ALB', 'Kong', 'Heracles API', 'PostgreSQL', 'Redis']
 
@@ -60,38 +59,6 @@ export default function LogsPage() {
         selectedComponent={selectedComponent}
         searchQuery={searchQuery}
       />
-
-      <div className="mt-4">
-        <table className="min-w-full">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Component</th>
-              <th>Message</th>
-              <th>Trace ID</th>
-              <th>Level</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.map((log) => (
-              <tr key={log.id}>
-                <td>{log.timestamp}</td>
-                <td>{log.component}</td>
-                <td>{log.message}</td>
-                <td>
-                  <Link 
-                    href={`/traces/${log.traceId}`}
-                    className="text-blue-500 hover:underline"
-                  >
-                    {log.traceId}
-                  </Link>
-                </td>
-                <td>{log.level}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   )
 } 

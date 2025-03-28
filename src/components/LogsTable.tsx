@@ -1,6 +1,7 @@
 'use client'
 
 import { LogEntry } from '@/mocks/logs.mock'
+import Link from 'next/link'
 
 interface LogsTableProps {
   logs: LogEntry[]
@@ -18,8 +19,8 @@ export default function LogsTable({ logs, selectedComponent, searchQuery }: Logs
 
   return (
     <div className="overflow-x-auto bg-gray-800 rounded-lg shadow-lg border border-gray-700">
-      <table className="min-w-full">
-        <thead className="bg-gray-900/50">
+      <table className="min-w-full divide-y divide-gray-700">
+        <thead>
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
               Timestamp
@@ -40,17 +41,20 @@ export default function LogsTable({ logs, selectedComponent, searchQuery }: Logs
         </thead>
         <tbody className="divide-y divide-gray-700">
           {filteredLogs.map((log) => (
-            <tr key={log.id} className="hover:bg-gray-700/50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">
-                {new Date(log.timestamp).toLocaleString()}
+            <tr key={log.id}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                {log.timestamp}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                 {log.component}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-mono">
-                <a href={`/traces/${log.traceId}`} className="text-blue-400 hover:text-blue-300">
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <Link 
+                  href={`/traces/${log.traceId}`}
+                  className="text-blue-400 hover:text-blue-300"
+                >
                   {log.traceId}
-                </a>
+                </Link>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
