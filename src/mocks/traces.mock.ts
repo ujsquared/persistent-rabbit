@@ -1,5 +1,4 @@
 import type { MetricDataPoint } from '@/types/telemetry'
-import { staticTraces } from '@/data/static-telemetry'
 import type { MetricWithTrace } from '@/types/telemetry'
 
 export interface SpanEvent {
@@ -325,7 +324,6 @@ export const mockTraces: Trace[] = [
       }
     ]
   },
-  // ... keep existing mockTraces entries ...
 ];
 
 // Add some error traces with specific patterns
