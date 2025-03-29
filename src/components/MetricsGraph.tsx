@@ -187,7 +187,7 @@ export default function MetricsGraph({
                 </div>
                 {log.traceId && (
                   <button
-                    onClick={() => setSelectedTraceId(log.traceId)}
+                    onClick={() => setSelectedTraceId(log.traceId || null)}
                     className="text-xs text-blue-400 hover:text-blue-300 font-mono"
                   >
                     {log.traceId}
