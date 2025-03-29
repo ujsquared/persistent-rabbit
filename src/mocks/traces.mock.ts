@@ -247,7 +247,86 @@ export const generateTraces = (metricsDataPoints: MetricDataPoint[]): Trace[] =>
 };
 
 // Generate a set of mock traces for the traces page
-export const mockTraces = Object.values(staticTraces)
+export const mockTraces: Trace[] = [
+  {
+    id: 'abc',
+    name: 'api.request',
+    startTime: new Date('2024-03-20T10:00:00Z').toISOString(),
+    endTime: new Date('2024-03-20T10:00:03Z').toISOString(),
+    timestamp: new Date('2024-03-20T10:00:00Z').toISOString(),
+    duration: 3000,
+    service: 'alb',
+    serviceId: 'alb',
+    type: 'request',
+    status: 'success',
+    rootService: 'alb',
+    spans: [
+      {
+        id: 'span-1',
+        name: 'alb.request',
+        startTime: new Date('2024-03-20T10:00:00Z').toISOString(),
+        endTime: new Date('2024-03-20T10:00:01Z').toISOString(),
+        duration: 1000,
+        serviceId: 'alb',
+        serviceName: 'Application Load Balancer',
+        layer: 'external',
+        status: 'success',
+        attributes: {
+          'http.method': 'GET',
+          'http.url': '/api/data',
+          'http.status_code': 200
+        },
+        events: [],
+        tags: {
+          environment: 'production'
+        }
+      },
+      {
+        id: 'span-2',
+        name: 'kong.proxy',
+        startTime: new Date('2024-03-20T10:00:01Z').toISOString(),
+        endTime: new Date('2024-03-20T10:00:02Z').toISOString(),
+        duration: 1000,
+        serviceId: 'kong',
+        serviceName: 'Kong API Gateway',
+        layer: 'entry',
+        status: 'success',
+        parentSpanId: 'span-1',
+        attributes: {
+          'http.method': 'GET',
+          'http.url': '/api/data',
+          'http.status_code': 200
+        },
+        events: [],
+        tags: {
+          environment: 'production'
+        }
+      },
+      {
+        id: 'span-3',
+        name: 'heracles.getData',
+        startTime: new Date('2024-03-20T10:00:02Z').toISOString(),
+        endTime: new Date('2024-03-20T10:00:03Z').toISOString(),
+        duration: 1000,
+        serviceId: 'heracles',
+        serviceName: 'Heracles API',
+        layer: 'core',
+        status: 'success',
+        parentSpanId: 'span-2',
+        attributes: {
+          'http.method': 'GET',
+          'http.path': '/api/data',
+          'http.status_code': 200
+        },
+        events: [],
+        tags: {
+          environment: 'production'
+        }
+      }
+    ]
+  },
+  // ... keep existing mockTraces entries ...
+];
 
 // Add some error traces with specific patterns
 const errorScenarios = [
